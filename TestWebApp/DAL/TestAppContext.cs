@@ -1,17 +1,12 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using System.Data.Entity;
 using TestWebApp.Models;
 
 namespace TestWebApp.DAL
 {
-    public class TestAppContext: IdentityDbContext<AppUser>
+    public class TestAppContext: DbContext
     {
-        public TestAppContext()
-            : base("TestAppContext", throwIfV1Schema: false)
-        {
-        }
+        public TestAppContext() : base("TestAppContext") {}
 
-        public static TestAppContext Create() {
-            return new TestAppContext();
-        }
+        public DbSet<AppUser> Users { get; set; }
     }
 }

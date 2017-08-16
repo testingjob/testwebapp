@@ -8,7 +8,7 @@ namespace TestWebApp.Controllers
     public class UserController: BaseController
     {
         [HttpGet]
-        public ActionResult Edit(string id)
+        public ActionResult Edit(int id)
         {
             return View(UserManager.GetUser(id));
         }

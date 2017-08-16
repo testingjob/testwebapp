@@ -214,10 +214,12 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BLL\AppUserManager.cs" />
+    <Compile Include="BLL\HashComputer.cs" />
+    <Compile Include="BLL\PasswordManager.cs" />
+    <Compile Include="BLL\SaltGenerator.cs" />
     <Compile Include="BLL\SignInResult.cs" />
     <Compile Include="Controllers\ApiControllers\UsersApiController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -229,6 +231,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Mappings\AutoMapperConfiguration.cs" />
+    <Compile Include="Migrations\201708161540407_InitialMigration.cs" />
+    <Compile Include="Migrations\201708161540407_InitialMigration.Designer.cs">
+      <DependentUpon>201708161540407_InitialMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
@@ -290,6 +297,11 @@
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201708161540407_InitialMigration.resx">
+      <DependentUpon>201708161540407_InitialMigration.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

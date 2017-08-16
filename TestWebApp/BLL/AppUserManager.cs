@@ -1,15 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Security.Authentication;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin;
-using Microsoft.Owin.Security;
 using TestWebApp.DAL;
 using TestWebApp.Mappings;
 using TestWebApp.Models;
@@ -17,82 +12,71 @@ using TestWebApp.ViewModels;
 
 namespace TestWebApp.BLL
 {
-    public class AppUserManager: UserManager<AppUser>
+    public class AppUserManager
     {
         #region properties
 
-        public AppUserManager(IUserStore<AppUser> store) : base(store) {}
-
-        private static IAuthenticationManager _authManager;
+        private static TestAppContext _db;
+        private readonly PasswordManager _pwdManager = new PasswordManager();
         private static IMapper _mapper;
 
-        #endregion
-
-        #region App User Manager creation
-
-        public static AppUserManager Create(IdentityFactoryOptions<AppUserManager> options, IOwinContext context)
+        public AppUserManager()
         {
-            var manager = new AppUserManager(new UserStore<AppUser>(context.Get<TestAppContext>()));
-
+            _db = new TestAppContext();
             var config = new AutoMapperConfiguration().Configure();
             _mapper = config.CreateMapper();
-            _authManager = context.Authentication;
-
-            return manager;
         }
-
         #endregion
 
         #region Custom logic
 
-        public async Task Add(RegisterViewModel user)
+        public async Task<UserManageModel> Add(RegisterViewModel user)
         {
-            await CreateAsync(_mapper.Map(user, new AppUser()), user.Password);
+            var appUser = _mapper.Map(user, new AppUser());
+            HashUserPassword(appUser);
+
+            var savedUser = _db.Users.Add(appUser);
+            await _db.SaveChangesAsync();
+
+            return _mapper.Map(savedUser, new UserManageModel());
         }
 
         public List<UserManageModel> GetUsers()
         {
-            return _mapper.Map(Users.OrderBy(u => u.UserName).ToList(), new List<UserManageModel>());
+            return _mapper.Map(_db.Users.ToList(), new List<UserManageModel>());
         }
 
-        public UserManageModel GetUser(string userId)
+        public UserManageModel GetUser(int userId)
         {
             return _mapper.Map(GetIfExists(u => u.Id.Equals(userId)), new UserManageModel());
         }
 
         public async Task<UserManageModel> Edit(UserManageModel userView)
         {
-            var existingUser = GetIfExists(u => u.UserName.Equals(userView.UserName));
-
+            var existingUser = await GetIfExists(u => u.Email.ToLower().Equals(userView.Email.ToLower()));
             _mapper.Map(userView, existingUser);
-            await UpdateAsync(existingUser);
 
+            await _db.SaveChangesAsync();
             return userView;
         }
 
-        public async Task<SignInResult> SignInUser(string emailOrUserName, string password)
+        public SignInResult SignInUser(string emailOrUserName, string password)
         {
-            var signInResult = new SignInResult();
-
-            var existingUser = await Users.SingleOrDefaultAsync(u => u.Email.ToLower().Equals(emailOrUserName.ToLower()) || u.UserName.ToLower().Equals(emailOrUserName.ToLower()));
-            if (existingUser != null) {
-                var passwordsMatch = (new PasswordHasher()).VerifyHashedPassword(existingUser.PasswordHash, password);
-
-                if (passwordsMatch == PasswordVerificationResult.Failed)
-                    signInResult.Exceptions.Add(new AuthenticationException("The password is wrong!"));
-
-                var ident = this.CreateIdentity(existingUser, DefaultAuthenticationTypes.ApplicationCookie);
-                _authManager.SignIn(new AuthenticationProperties { IsPersistent = false }, ident);
-            }
-            else
-                signInResult.Exceptions.Add(new AuthenticationException("User with such credentials doesn't exist!"));
-
-            return signInResult;
+            // create user session
+            throw new NotImplementedException();
         }
 
-        private AppUser GetIfExists(Expression<System.Func<AppUser, bool>> exp) {
+        private void HashUserPassword(AppUser user) {
+            string salt = null;
+            var passwordHash = _pwdManager.GeneratePasswordHash(user.Password, out salt);
 
-            var existedUser = Users.SingleOrDefault(exp);
+            user.Password = passwordHash;
+            user.Salt = salt;
+        }
+
+        private async Task<AppUser> GetIfExists(Expression<Func<AppUser, bool>> exp) {
+
+            var existedUser = await _db.Users.SingleOrDefaultAsync(exp);
             if (existedUser == null)
                 throw new KeyNotFoundException("There is no user for such condition!");
 

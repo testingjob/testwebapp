@@ -37,7 +37,7 @@ namespace TestWebApp.Controllers
             if (ModelState.IsValid)
             {
                 await UserManager.Add(user);
-                return await TrySignIn(user.Email, user.Password);
+                return RedirectToAction("Login");
             }
 
             throw new ValidationException("Registraion model is wrong!");
@@ -56,13 +56,13 @@ namespace TestWebApp.Controllers
         [HttpGet]
         public ActionResult Logout()
         {
-            AuthManager.SignOut();
+            //AuthManager.SignOut();
             return RedirectToAction("Login");
         }
 
         private async Task<ActionResult> TrySignIn(string emailOrUserName, string password)
         {
-            var sigInResult = await UserManager.SignInUser(emailOrUserName, password);
+            var sigInResult = UserManager.SignInUser(emailOrUserName, password);
             if (sigInResult.Success)
                 return Redirect(Url.Action("Index", "Home"));
 
