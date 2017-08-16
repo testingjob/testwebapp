@@ -1,0 +1,31 @@
+﻿@model TestWebApp.ViewModels.LoginViewModel
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Login</h2>
+@using (Html.BeginForm("Login", "Account", FormMethod.Post, new {enctype = "multipart/form-data"}))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+    <table>
+        <tr>
+            <td>
+                <p>Email :</p></td>
+            <td>
+                @Html.EditorFor(u => u.Email)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>Password :</p></td>
+            <td>
+                @Html.EditorFor(u => u.Password)
+            </td>
+        </tr>
+        <tr><td><input type="submit" value="Login"/> </td><td></td></tr>
+    </table>
+}

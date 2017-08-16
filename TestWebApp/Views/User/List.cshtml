@@ -1,0 +1,41 @@
+﻿@model IEnumerable <TestWebApp.ViewModels.UserManageModel>
+
+@{
+    ViewBag.Title = "Users list";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+<div>
+    <h2>Users list</h2>
+    <table>
+        <tr><td>
+                <p>@Html.DisplayNameFor(x => x.UserName)</p></td>
+            <td>
+                <p>@Html.DisplayNameFor(x => x.Email)</p></td>
+            <td>
+                <p>@Html.DisplayNameFor(x => x.PhoneNumber)</p></td>
+            <td>
+                <p>@Html.DisplayNameFor(x => x.Age)</p></td>
+            <td></td>
+        </tr>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                    <p>@user.UserName</p></td>
+                <td>
+                    <p>@user.Email</p></td>
+                <td>
+                    <p>@user.PhoneNumber</p></td>
+                <td>
+                <td><p> @if (user.Age > 0)
+                        {
+                            @user.Age
+                        }</p></td>
+
+                <td><p>@Html.ActionLink("Edit", "Edit", new { user.Id })</p></td>
+            </tr>
+        }
+    </table>
+</div>

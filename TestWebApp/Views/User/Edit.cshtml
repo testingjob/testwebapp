@@ -1,0 +1,38 @@
+﻿@model TestWebApp.ViewModels.UserManageModel
+
+@{
+    ViewBag.Title = "Edit User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit User</h2>
+
+<div>
+    <h3>User Editing</h3>
+@using (Html.BeginForm("Edit", "User", FormMethod.Post, new { enctype = "multipart/form-data" })) 
+{
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+    <input type="hidden" value="@Model.Id" name="Id"/>
+    <table>
+        <tr><td>
+                <p>UserName :</p></td>
+            <td>
+            @Html.EditorFor(u => u.UserName)    
+            </td></tr>
+        <tr><td>
+            <p>Email :</p></td><td>
+            @Html.EditorFor(u => u.Email)
+        </td></tr>
+        <tr><td>
+            <p>Phone :</p></td><td>
+             @Html.EditorFor(u => u.PhoneNumber)
+        </td></tr>
+        <tr><td>
+            <p>Age :</p></td><td>
+             @Html.EditorFor(u => u.Age)
+        </td></tr>
+        <tr><td><input type="submit" value="Save"/> </td><td></td></tr>
+    </table>
+}
+</div>

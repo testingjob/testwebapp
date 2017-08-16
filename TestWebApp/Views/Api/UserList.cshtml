@@ -1,0 +1,113 @@
+﻿
+@{
+    ViewBag.Title = "UserList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Users List</h2>
+
+<div id="users" ng-app="usersApp">
+    <div ng-controller="usersController">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <td><h3>Email</h3></td>
+                <td><h3>Name</h3></td>
+                <td><h3>Age</h3></td>
+                <td><h3>Phone</h3></td>
+                <td></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="user in users">
+                <td><input type="email" ng-model="user.Email"/></td>
+                <td><input type="text" ng-model="user.UserName" /></td>
+                <td><input type="text" ng-pattern="integerval"  ng-model="user.Age" /></td>
+                <td><input type="text" ng-model="user.PhoneNumber" /></td>
+                <td><input type="button" ng-click="save(user)" value="Save"/></td>
+            </tr>
+            </tbody>
+        </table>
+        
+        <table>
+            <thead>
+            <tr>
+                <td><h3>Email</h3></td>
+                <td><h3>Password</h3></td>
+                <td><h3>ConfirmPassword</h3></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr >
+                <td><input type="email" ng-model="newUser.Email"/></td>
+                <td><input type="password" ng-model="newUser.Password"/></td>
+                <td><input type="password" ng-model="newUser.ConfirmPassword"/></td>
+            </tr>
+            </tbody>
+        </table>
+        <input type="button" ng-click="add(newUser)" value="Add New"/>
+
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        (function ($, toastr) {
+            var usersApp = angular.module('usersApp', []);
+            var host = 'http://localhost:56252/api/users';
+            usersApp.controller('usersController',
+                [
+                    '$scope', function($scope) {
+                        function populateUsers() {
+                            $.ajax({
+                                type: 'GET',
+                                url: host,
+                                success: function(users) {
+                                    $scope.users = users;
+                                    $scope.$apply();
+                                },
+                                error: function (error) {
+                                    showError(error);
+                                }
+                            });
+                        }
+
+                        $scope.save = function(user) {
+                            $.ajax({
+                                type: 'POST',
+                                url: host + '/edit',
+                                data: user,
+                                success: function() {
+                                    toastr.success('successfully saved!');
+                                },
+                                error: function(error) {
+                                    showError(error);
+                                }
+                            });
+                        }
+
+                        $scope.add = function(user) {
+                            $.ajax({
+                                type: 'POST',
+                                url: host + '/add',
+                                data: user,
+                                success: function() {
+                                    toastr.success('successfully saved!');
+                                    populateUsers();
+                                },
+                                error: function (error) {
+                                    showError(error);
+                                }
+                            });
+                        }
+
+                        function showError(error) {
+                            toastr.error(error.responseJSON.ExceptionMessage);
+                        }
+
+                        populateUsers();
+                    }
+                ]);
+        })($, toastr);
+    </script>
+}
