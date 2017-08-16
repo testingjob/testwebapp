@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
@@ -48,15 +47,7 @@ namespace TestWebApp.BLL
 
         public async Task Add(RegisterViewModel user)
         {
-            try
-            {
-                await CreateAsync(_mapper.Map(user, new AppUser()), user.Password);
-
-            } catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            await CreateAsync(_mapper.Map(user, new AppUser()), user.Password);
         }
 
         public List<UserManageModel> GetUsers()

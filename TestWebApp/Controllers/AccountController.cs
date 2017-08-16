@@ -35,7 +35,10 @@ namespace TestWebApp.Controllers
         public async Task<ActionResult> Register(RegisterViewModel user)
         {
             if (ModelState.IsValid)
+            {
+                await UserManager.Add(user);
                 return await TrySignIn(user.Email, user.Password);
+            }
 
             throw new ValidationException("Registraion model is wrong!");
         }
