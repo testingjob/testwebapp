@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.AspNet.Identity.Owin;
 using TestWebApp.BLL;
 using TestWebApp.ViewModels;
 
@@ -13,7 +11,7 @@ namespace TestWebApp.Controllers.ApiControllers
     public class UsersController: ApiController
     {
         private AppUserManager _appUserManager;
-        private AppUserManager UserManager => _appUserManager ?? Request.GetOwinContext().GetUserManager<AppUserManager>();
+        private AppUserManager UserManager => _appUserManager ?? new AppUserManager();
 
         [HttpPost]
         [Route("add")]
